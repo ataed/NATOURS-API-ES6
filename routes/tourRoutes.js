@@ -1,5 +1,5 @@
 // const express = require("express");
-import express from "express";
+import express from 'express';
 
 import {
   getAllTours,
@@ -7,15 +7,15 @@ import {
   getTour,
   updateTour,
   deleteTour,
-  checkID,
+  // checkID,
   checkBody,
-} from "../controllers/tourController";
+} from '../controllers/tourController';
 
 const router = express.Router();
 
-router.param("id", checkID);
+// router.param('id',checkID);
 
-router.route("/").get(getAllTours).post(checkBody, createTour);
-router.route("/:id").get(getTour).patch(updateTour).delete(deleteTour);
+router.route('/').get(getAllTours).post(checkBody, createTour);
+router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
 export default router;

@@ -10,7 +10,12 @@ const URI = process.env.ATLAS_URI.replace(
   process.env.URI_PASSWORD
 );
 mongoose
-  .connect(URI)
+  .connect(URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  })
   .then(() => console.log('done'))
   .catch((err) => console.log(err));
 
