@@ -45,6 +45,13 @@ const userSchema = new Schema({
   },
 });
 
+userSchema.methods.correctPassword = async (
+  candidatePassword,
+  userPassword
+) => {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
 userSchema.pre('save', async function (next) {
   //check if pw modified
   if (!this.isModified('password')) return next();
