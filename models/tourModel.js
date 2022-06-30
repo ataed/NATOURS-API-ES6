@@ -13,7 +13,11 @@ const tourSchema = new Schema(
       trim: true,
       maxLength: [40, 'A tour name must have less or equal then 40 characters'],
       minLength: [10, 'A tour name must have more or equal then 10 characters'],
-      validate: [validator.isAlpha, 'Tour name must only contain characters'],
+      validate: {
+        validator: (val) => validator.isAlpha(val, ['en-US'], { ignore: ' ' }),
+
+        message: 'Tour name must only contain characters',
+      },
     },
     slug: String,
     duration: {
@@ -54,10 +58,10 @@ const tourSchema = new Schema(
       type: Number,
       validate: {
         validator: function (val) {
-          //this ONLY points to current doc on NEW CREATION
-          return val < this.price;
+          //this only points to current docs on NEW document creation and not on update document
+          return this.price > val;
         },
-        message: 'Discount price ({VALUE}) should be below regular price',
+        message: 'Discount price ({VALUE}) should be below regular price ',
       },
     },
     summary: {

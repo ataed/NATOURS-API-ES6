@@ -5,7 +5,8 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start:dev": "nodemon --es-module-specifier-resolution=node  server.js"
+    "start:dev": "nodemon --es-module-specifier-resolution=node  server.js",
+    "start:prod": "NODE_ENV=production  nodemon --es-module-specifier-resolution=node server.js"
   },
   "author": "ataed",
   "license": "ISC",
