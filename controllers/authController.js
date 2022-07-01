@@ -71,18 +71,30 @@ export const protect = catchAsync(async (req, res, next) => {
   // console.log(decoded);
 
   //check if user still exist
-  const freshUser = await User.findById(decoded.id);
-  if (!freshUser)
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser)
     return next(
       new AppError(401, 'The user belonging to this token does not exist.')
     );
   //check if user changed pw after the token was issued
-  if (freshUser.changedPasswordAfter(decoded.iat))
+  if (currentUser.changedPasswordAfter(decoded.iat))
     return next(
       new AppError(401, 'User currently changed password! PLease login again')
     );
 
   //GRANT ACCESS to protected route
-  req.user = freshUser;
+  req.user = currentUser;
   next();
 });
+
+export const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //we get the user from the protect middleware(run before)
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError(403, "You don't have permission to perform this action!")
+      );
+    }
+    next();
+  };
+};
