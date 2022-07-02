@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 import validator from 'validator';
-
 import slugify from 'slugify';
+
 const tourSchema = new Schema(
   {
     name: {
@@ -83,14 +83,47 @@ const tourSchema = new Schema(
       type: Date,
       default: Date.now(),
     },
-    secretTour: Boolean,
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
+    startLocation: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+
+      address: String,
+      description: String,
+    },
+
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
-
 //NOTE: virtual properties(not stored in db so you cant query them)
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
@@ -99,6 +132,13 @@ tourSchema.virtual('durationWeeks').get(function () {
 //DOCUMENT MIDDLEWARE: runs before .save() and .create() not in .insertMany()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
 

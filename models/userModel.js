@@ -36,10 +36,10 @@ const userSchema = new Schema({
   passwordConfirm: {
     type: String,
     required: [true, 'Please confirm your password'],
-    //check only on .save and .create!!!!!
     validate: {
+      //This only works on CREATE & SAVE !!!!
       validator: function (el) {
-        return el === this.password;
+        return this.password === el;
       },
       message: 'Passwords are not the same',
     },
@@ -49,8 +49,8 @@ const userSchema = new Schema({
   passwordResetExpires: Date,
   active: {
     type: Boolean,
-    default: true,
     select: false,
+    default: true,
   },
 });
 
