@@ -1,55 +1,58 @@
-import { readFileSync } from 'fs';
+import { catchAsync } from './../utils/catchAsync';
+import AppError from './../utils/appError';
+import User from './../models/userModel';
 
-const users = JSON.parse(
-  // fs.readFileSync(`${__dirname}/../dev-data/data/users.json`)
-  readFileSync(new URL('./../dev-data/data/users.json', import.meta.url))
-);
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
 
-export const getAllUsers = (req, res) => {
-  console.log(req.requestTime);
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
+export const updateMe = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.confirmPassword) {
+    return next(
+      new AppError(
+        400,
+        'This route is not for password updates! Please use /updateMyPassword to change your password'
+      )
+    );
+  }
+  const filteredBody = filterObj(req.body, 'name', 'email');
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
   res.status(200).json({
     status: 'success',
-    requestedAt: req.requestTime,
+    data: {
+      user: updatedUser,
+    },
+  });
+});
+
+export const getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find();
+
+  res.status(200).json({
+    status: 'success',
     results: users.length,
     data: {
       users,
     },
   });
-};
+});
 
 export const getUser = (req, res) => {
-  console.log(req.params.id);
-  const user = users.find((el) => el._id === req.params.id);
-
-  // if (id > users.length) {
-  if (!user) {
-    return res.status(404).json({ status: 'fail', message: 'Invalid id' });
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user,
-    },
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined!',
   });
-  console.log(user);
 };
 
-export const createUser = (req, res) => {
-  const newId = users[users.length - 1].id + 1;
-  const newUser = Object.assign({ id: newId }, req.body);
-
-  users.push(newTour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/users.json`,
-    JSON.stringify(users),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: { user: newUser },
-      });
-    }
-  );
-};
-
-export const updateUser = (req, res) => {};
-export const deleteUser = (req, res) => {};
+export const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({ status: 'success', data: null });
+});
