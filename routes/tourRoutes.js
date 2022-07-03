@@ -12,7 +12,11 @@ import {
 } from './../controllers/tourController';
 import { protect, restrictTo } from './../controllers/authController';
 
+import reviewRouter from './../routes/reviewRoutes';
+
 const router = express.Router();
+
+router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
