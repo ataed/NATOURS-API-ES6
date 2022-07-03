@@ -2,6 +2,8 @@ import { catchAsync } from './../utils/catchAsync';
 import AppError from './../utils/appError';
 import User from './../models/userModel';
 
+import { getAll, getOne, updateOne, deleteOne } from './factoryHandler';
+
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
 
@@ -33,26 +35,19 @@ export const updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
-
-export const getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!',
-  });
-};
-
 export const deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
   res.status(204).json({ status: 'success', data: null });
 });
+
+export const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'success',
+    message: 'This route is not defined! Please use /signup instead',
+  });
+};
+
+export const getAllUsers = getAll(User);
+export const getUser = getOne(User);
+export const deleteUser = deleteOne(User);
+export const updateUser = updateOne(User);

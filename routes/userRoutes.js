@@ -5,6 +5,9 @@ import {
   getUser,
   deleteMe,
   updateMe,
+  updateUser,
+  deleteUser,
+  createUser,
 } from '../controllers/userController';
 import {
   signup,
@@ -18,14 +21,19 @@ import {
 const router = express.Router();
 router.post('/signup', signup);
 router.post('/login', login);
-router.patch('/updateMyPassword', protect, updatePassword);
-router.patch('/updateMe', protect, updateMe);
-router.delete('/deleteMe', protect, deleteMe);
-
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 
-router.route('/').get(protect, restrictTo('admin'), getAllUsers);
-router.route('/:id').get(getUser);
+//Protect all routes after this middleware
+router.use(protect);
 
+router.patch('/updateMyPassword', updatePassword);
+// router.get('/me', getMe, getUser);
+router.patch('/updateMe', updateMe);
+router.delete('/deleteMe', deleteMe);
+
+router.use(restrictTo('admin'));
+
+router.route('/').get(getAllUsers).post(createUser);
+router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 export default router;
