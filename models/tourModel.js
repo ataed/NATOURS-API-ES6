@@ -114,7 +114,7 @@ const tourSchema = new Schema(
     ],
     guides: [
       {
-        type: mongoose.Schema.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User',
       },
     ],
@@ -127,6 +127,13 @@ const tourSchema = new Schema(
 //NOTE: virtual properties(not stored in db so you cant query them)
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+//Virtual Populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
 });
 
 //DOCUMENT MIDDLEWARE: runs before .save() and .create() not in .insertMany()
