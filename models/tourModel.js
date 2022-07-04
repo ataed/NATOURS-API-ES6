@@ -127,6 +127,8 @@ const tourSchema = new Schema(
 );
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+
+tourSchema.index({ startLocation: '2dsphere' });
 //NOTE: virtual properties(not stored in db so you cant query them)
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
@@ -169,7 +171,7 @@ tourSchema.post(/^find/, function (doc, next) {
 tourSchema.pre('aggregate', function (next) {
   // console.log(this.pipeline());
   //remove the secretTours from the pipeline
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  this.pipeline().push({ $match: { secretTour: { $ne: true } } });
   next();
 });
 const Tour = mongoose.model('Tour', tourSchema); //create tour collection
