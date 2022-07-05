@@ -1,12 +1,14 @@
 {
-  "name": "natoursv2",
-  "version": "1.0.0",
-  "description": "Natours Web App V2",
+  "name": "Natours-API",
+  "version": "1.1.0",
+  "description": "Natours API",
   "type": "module",
   "main": "server.js",
   "scripts": {
     "start:dev": "nodemon --es-module-specifier-resolution=node  server.js",
-    "start:prod": "NODE_ENV=production  nodemon --es-module-specifier-resolution=node server.js"
+    "start:prod": "NODE_ENV=production  nodemon --es-module-specifier-resolution=node server.js",
+    "import-dev-data": "node --es-module-specifier-resolution=node dev-data/import-dev-data.js --import",
+    "delete-dev-data": "node --es-module-specifier-resolution=node dev-data/import-dev-data.js --delete"
   },
   "author": "ataed",
   "license": "ISC",
